@@ -154,6 +154,8 @@ def main() -> bool:
     video, ekg = acquire()
     frames_per_second:  float = video.get(cv2.CAP_PROP_FPS)
     brightness = get_red_pixels(video)
+    plt.plot(brightness)
+    plt.show()
 
     # Cutoff Frequencies
     fcl = BPM_L / 60
