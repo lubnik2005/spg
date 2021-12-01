@@ -34,7 +34,6 @@ FINE_TUNING_FREQ_INCREMENT:int = 1      # [bpm] Separation between test tones fo
 # Imports
 # =============================================================================
 
-
 # =============================================================================
 # Retreives the video and makes sure that it exists and is readable
 # =============================================================================
