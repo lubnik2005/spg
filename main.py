@@ -11,10 +11,13 @@ from typing import List, Set, Dict, Tuple, Optional
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 from scipy import signal
+from sklearn.preprocessing import normalize
 import datetime
 import math
 import numpy as np
 import cv2
+import os
+import pandas as pd
 import os
 ORDER: int = 2      # Order of the butterworth filter
 BPM_L: int = 50     # [bpm] The lowest heart rate
@@ -30,6 +33,7 @@ FINE_TUNING_FREQ_INCREMENT:int = 1      # [bpm] Separation between test tones fo
 # =============================================================================
 # Imports
 # =============================================================================
+
 
 # =============================================================================
 # Retreives the video and makes sure that it exists and is readable
@@ -154,8 +158,9 @@ def main() -> bool:
     video, ekg = acquire()
     frames_per_second:  float = video.get(cv2.CAP_PROP_FPS)
     brightness = get_red_pixels(video)
-    plt.plot(brightness)
-    plt.show()
+    np.savetxt('data.csv', np.array(brightness), delimiter=",")
+    #plt.plot(brightness)
+    #plt.show()
 
     # Cutoff Frequencies
     fcl = BPM_L / 60
@@ -166,6 +171,9 @@ def main() -> bool:
         brightness, fcl, fch, frames_per_second, order=ORDER)
     fbrightness = remove_stabilization(
         fbrightness, frames_per_second, FILTER_STABILIZATION_TIME)
+    
+    plt.plot(fbrightness)
+    plt.show()
 
     # Precalculations
     num_window_samples = round(WINDOW_SECONDS * frames_per_second)
@@ -243,3 +251,17 @@ def main() -> bool:
 
 
 main()
+# =============================================================================
+# Import Data from EKG/PPG "AFE4950"
+# =============================================================================
+# FIXME: This is being imported incorrectly. The first column is *not* an indexing
+"""
+afe_file = os.path.join('test_data', 'AFE4950_CAPTURED_DATA.csv')
+df = pd.read_csv(afe_file, index_col=False)
+ECG = butter_bandpass_filter(df['ECG_Value'], 40, 100, 500, order=5)
+plt.plot(df['ECG_Time'][0:1000], ECG[0:1000]/700)
+#plt.plot(df['TIA1-3_Time'], df['TIA1-3_Value'] - np.mean(df['TIA1-3_Value']))
+plt.show()
+print(df.head())
+"""
+
